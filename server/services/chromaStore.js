@@ -10,10 +10,14 @@ async function getCollection() {
   if (collection) return collection;
 
   const url = new URL(config.chromaUrl);
+  const isHttps = url.protocol === "https:";
+  // On Render, HTTPS services don't have an explicit port (defaults to 443)
+  const port = url.port ? parseInt(url.port, 10) : isHttps ? 443 : 8000;
+
   client = new ChromaClient({
     host: url.hostname,
-    port: parseInt(url.port, 10),
-    ssl: url.protocol === "https:",
+    port,
+    ssl: isHttps,
   });
 
   collection = await client.getOrCreateCollection({

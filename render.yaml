@@ -1,0 +1,39 @@
+services:
+  # ChromaDB vector database - deployed as a Docker container
+  - type: web
+    name: ipsakti-chromadb
+    runtime: docker
+    dockerfilePath: ./chromadb/Dockerfile
+    plan: free
+    envVars:
+      - key: CHROMA_SERVER_CORS_ALLOW_ORIGINS
+        value: '["*"]'
+      - key: IS_PERSISTENT
+        value: "true"
+      - key: PERSIST_DIRECTORY
+        value: /chroma/chroma
+    disk:
+      name: chroma-data
+      mountPath: /chroma/chroma
+      sizeGB: 1
+
+  # Node.js Express backend
+  - type: web
+    name: ipsakti-backend
+    runtime: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node index.js
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "3001"
+      - key: CHROMA_URL
+        fromService:
+          name: ipsakti-chromadb
+          type: web
+          property: host
+      - key: GEMINI_API_KEY
+        sync: false   # Set this manually in Render dashboard
