@@ -9,13 +9,7 @@ services:
       - key: CHROMA_SERVER_CORS_ALLOW_ORIGINS
         value: '["*"]'
       - key: IS_PERSISTENT
-        value: "true"
-      - key: PERSIST_DIRECTORY
-        value: /chroma/chroma
-    disk:
-      name: chroma-data
-      mountPath: /chroma/chroma
-      sizeGB: 1
+        value: "false"
 
   # Node.js Express backend
   - type: web
