@@ -1,12 +1,21 @@
-import { useState, useRef } from "react";
+﻿import { useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { Send, Sparkles } from "lucide-react";
+import { Send, Sparkles, Globe } from "lucide-react";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 
+export const LANGUAGES = [
+  { code: "auto", label: "Auto-detect" },
+  { code: "en",   label: "English" },
+  { code: "hi",   label: "हिंदी" },
+  { code: "ta",   label: "தமிழ்" },
+  { code: "te",   label: "తెలుగు" },
+  { code: "bn",   label: "বাংলা" },
+];
+
 const PLACEHOLDER = "Ask about Ayurveda IP & regulations…";
 
-export default function ChatInput({ onSend, disabled }) {
+export default function ChatInput({ onSend, disabled, language, onLanguageChange }) {
   const [value, setValue] = useState("");
   const inputRef = useRef(null);
 
@@ -26,14 +35,35 @@ export default function ChatInput({ onSend, disabled }) {
     >
       <Card className="hover:shadow-md hover:shadow-indigo-100/60 transition-all duration-300">
         <div className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50">
-              <Sparkles className="w-4 h-4 text-indigo-600" />
+          <div className="flex items-center justify-between gap-2 mb-4">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50">
+                <Sparkles className="w-4 h-4 text-indigo-600" />
+              </div>
+              <h2 className="text-base font-semibold text-slate-800">
+                Ask about Ayurveda IP &amp; regulations
+              </h2>
             </div>
-            <h2 className="text-base font-semibold text-slate-800">
-              Ask about Ayurveda IP &amp; regulations
-            </h2>
+
+            {/* Language selector */}
+            <div className="flex items-center gap-1.5 text-xs text-slate-500 shrink-0">
+              <Globe className="w-3.5 h-3.5 text-indigo-400" />
+              <select
+                value={language}
+                onChange={(e) => onLanguageChange(e.target.value)}
+                disabled={disabled}
+                className="text-xs border border-slate-200 rounded-lg px-2 py-1 bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 disabled:opacity-50 cursor-pointer"
+                title="Response language"
+              >
+                {LANGUAGES.map((l) => (
+                  <option key={l.code} value={l.code}>
+                    {l.label}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
+
           <form onSubmit={handleSubmit} className="flex gap-2">
             <input
               ref={inputRef}

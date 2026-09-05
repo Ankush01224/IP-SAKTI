@@ -1,4 +1,4 @@
-const BASE = "";
+﻿const BASE = "";
 
 export async function uploadDocument(file) {
   const form = new FormData();
@@ -24,11 +24,18 @@ export async function listDocuments() {
   return res.json();
 }
 
-export async function sendChat(query) {
+/**
+ * @param {string} query
+ * @param {string} [language] - ISO-639-1 code e.g. "hi", "ta". If omitted, server auto-detects.
+ */
+export async function sendChat(query, language) {
+  const body = { query };
+  if (language) body.language = language;
+
   const res = await fetch(`${BASE}/api/chat`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ query }),
+    body: JSON.stringify(body),
   });
   if (!res.ok) throw new Error((await res.json()).error || "Chat failed");
   return res.json();

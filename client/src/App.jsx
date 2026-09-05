@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+﻿import { useState, useEffect, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import ChatInput from "./components/ChatInput";
 import DocumentsCard from "./components/DocumentsCard";
@@ -13,6 +13,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [docs, setDocs] = useState([]);
   const [totalChunks, setTotalChunks] = useState(0);
+  const [language, setLanguage] = useState("auto"); // shared language state
 
   const refreshDocs = useCallback(async () => {
     try {
@@ -33,10 +34,12 @@ export default function App() {
     setView("chat");
     setLoading(true);
     try {
-      const data = await sendChat(query);
+      // "auto" means we omit the language field — server will detect it
+      const langParam = language === "auto" ? undefined : language;
+      const data = await sendChat(query, langParam);
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", text: data.answer, sources: data.sources },
+        { role: "assistant", text: data.answer, sources: data.sources, detectedLanguage: data.detectedLanguage },
       ]);
     } catch (err) {
       setMessages((prev) => [
@@ -81,7 +84,12 @@ export default function App() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Large card — spans full width */}
                 <div className="md:col-span-2">
-                  <ChatInput onSend={handleSend} disabled={loading} />
+                  <ChatInput
+                    onSend={handleSend}
+                    disabled={loading}
+                    language={language}
+                    onLanguageChange={setLanguage}
+                  />
                 </div>
 
                 {/* Medium card — documents */}
@@ -113,6 +121,8 @@ export default function App() {
                 onSend={handleSend}
                 onBack={handleBack}
                 loading={loading}
+                language={language}
+                onLanguageChange={setLanguage}
               />
             </motion.div>
           )}

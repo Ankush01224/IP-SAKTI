@@ -1,11 +1,12 @@
-import { useRef, useEffect, useState } from "react";
+﻿import { useRef, useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Send, Loader2 } from "lucide-react";
+import { ArrowLeft, Send, Loader2, Globe } from "lucide-react";
 import { Button } from "./ui/button";
 import { ScrollArea } from "./ui/scroll-area";
 import ChatMessage from "./ChatMessage";
+import { LANGUAGES } from "./ChatInput";
 
-export default function ChatView({ messages, onSend, onBack, loading }) {
+export default function ChatView({ messages, onSend, onBack, loading, language, onLanguageChange }) {
   const [value, setValue] = useState("");
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
@@ -34,11 +35,31 @@ export default function ChatView({ messages, onSend, onBack, loading }) {
       className="flex flex-col h-[calc(100vh-4rem)] max-w-3xl mx-auto"
     >
       {/* Header */}
-      <div className="flex items-center gap-3 py-3 px-1 shrink-0">
-        <Button variant="ghost" size="icon" onClick={onBack}>
-          <ArrowLeft className="w-4 h-4" />
-        </Button>
-        <h2 className="text-sm font-semibold text-slate-800">IP-SAKTI Sahayak</h2>
+      <div className="flex items-center justify-between gap-3 py-3 px-1 shrink-0">
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="icon" onClick={onBack}>
+            <ArrowLeft className="w-4 h-4" />
+          </Button>
+          <h2 className="text-sm font-semibold text-slate-800">IP-SAKTI Sahayak</h2>
+        </div>
+
+        {/* Language selector */}
+        <div className="flex items-center gap-1.5 text-xs text-slate-500 shrink-0">
+          <Globe className="w-3.5 h-3.5 text-indigo-400" />
+          <select
+            value={language}
+            onChange={(e) => onLanguageChange(e.target.value)}
+            disabled={loading}
+            className="text-xs border border-slate-200 rounded-lg px-2 py-1 bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 disabled:opacity-50 cursor-pointer"
+            title="Response language"
+          >
+            {LANGUAGES.map((l) => (
+              <option key={l.code} value={l.code}>
+                {l.label}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* Messages */}
